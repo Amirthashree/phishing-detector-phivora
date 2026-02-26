@@ -1,0 +1,177 @@
+======================
+>> # PHISHING DETECTION API - COMPLETE ENDPOINT DOCUMENTATION v1.0.0
+>> # ============================================================================
+>> # Version: 1.0.0
+>> # Base URL: http://localhost:8000
+>> # Models: XGBoost | Random Forest | SGD | Naive Bayes (Ensemble)
+>> # Ensemble Accuracy: 88% | F1: 0.83 | Threshold: 0.55
+>> # Database: MongoDB Connected (phishing_detection)
+>> # Last Updated: 2026-02-26
+>> # ============================================================================
+>>
+>> ## TABLE OF CONTENTS
+>> 1. Basic Endpoints       (2)
+>> 2. Scan Endpoints        (1)
+>> 3. History Endpoints     (1)
+>> 4. Metrics Endpoints     (1)
+>>
+>> Total: 5 Endpoints
+>>
+>> # ============================================================================
+>> # 1. BASIC ENDPOINTS (2)
+>> # ============================================================================
+>>
+>> ## 1.1 GET / - API Home
+>> Description: Welcome endpoint with API info
+>>
+>> ## 1.2 GET /docs - Auto Swagger UI (FastAPI)
+>> Description: Interactive API documentation (built-in FastAPI feature)
+>> URL: http://localhost:8000/docs
+>>
+>> # ============================================================================
+>> # 2. SCAN ENDPOINTS (1)
+>> # ============================================================================
+>>
+>> ## 2.1 POST /scan/ - Scan URL or Text
+>> Description: Submit a URL, text message, or both for phishing detection.
+>>              Returns verdict, confidence score, severity, and per-model scores.
+>>
+>> Request Body (JSON):
+>> {
+>>   "url":  "https://example.com",   ← optional
+>>   "text": "Your message here"      ← optional (at least one required)
+>> }
+>>
+>> Response:
+>> {
+>>   "scan_id":      "d244b43a-...",
+>>   "label":        1,                   ← 0=legitimate, 1=phishing
+>>   "verdict":      "PHISHING",          ← PHISHING | LEGITIMATE
+>>   "confidence":   0.7624,              ← ensemble score (0.0 – 1.0)
+>>   "severity":     "MEDIUM",            ← HIGH | MEDIUM | LOW | SAFE
+>>   "data_type":    "url",               ← url | text | both
+>>   "model_scores": {
+>>     "xgboost":       0.657,
+>>     "random_forest": 0.4258,
+>>     "sgd":           0.9279,
+>>     "naive_bayes":   0.9806
+>>   },
+>>   "timestamp":    "2026-02-26T02:14:16.830197Z",
+>>   "input": {
+>>     "url":  "http://paypal-secure-login.tk/verify/account",
+>>     "text": ""
+>>   }
+>> }
+>>
+>> Severity Thresholds:
+>>   confidence >= 0.85  → HIGH
+>>   confidence >= 0.65  → MEDIUM
+>>   confidence >= 0.55  → LOW
+>>   confidence <  0.55  → SAFE
+>>
+>> Ensemble Weights (URL):
+>>   SGD=0.50, XGBoost=0.25, RandomForest=0.20, NaiveBayes=0.05
+>>
+>> Ensemble Weights (Trusted URL e.g. google.com):
+>>   XGBoost=0.40, RandomForest=0.30, SGD=0.20, NaiveBayes=0.10
+>>
+>> Ensemble Weights (Text only):
+>>   NaiveBayes=1.00
+>>
+>> # ============================================================================
+>> # 3. HISTORY ENDPOINTS (1)
+>> # ============================================================================
+>>
+>> ## 3.1 GET /history/ - Get Scan History
+>> Description: Retrieve past scans stored in MongoDB.
+>>
+>> Query Parameters:
+>>   limit (int, optional) - Number of records to return. Default: 10
+>>
+>> Examples:
+>>   GET /history/           → returns last 10 scans
+>>   GET /history/?limit=50  → returns last 50 scans
+>>
+>> Response:
+>> {
+>>   "total":      13,
+>>   "phishing":   6,
+>>   "legitimate": 7,
+>>   "scans": [ { ...scan objects... } ]
+>> }
+>>
+>> # ============================================================================
+>> # 4. METRICS ENDPOINTS (1)
+>> # ============================================================================
+>>
+>> ## 4.1 GET /metrics/ - Get Model Metrics
+>> Description: Retrieve stored model performance metrics from MongoDB.
+>>
+>> Response:
+>> {
+>>   "metrics": {
+>>     "timestamp":     "2026-02-26T02:16:46Z",
+>>     "training_date": "2026-02-26",
+>>     "ensemble": {
+>>       "accuracy":  0.88,
+>>       "f1":        0.8276,
+>>       "precision": 0.8496,
+>>       "recall":    0.8067,
+>>       "roc_auc":   0.7593,
+>>       "threshold": 0.55
+>>     },
+>>     "weights": {
+>>       "sgd":          0.50,
+>>       "xgboost":      0.25,
+>>       "random_forest":0.20,
+>>       "naive_bayes":  0.05
+>>     },
+>>     "individual": {
+>>       "naive_bayes_acc": 0.9697,
+>>       "naive_bayes_roc": 0.9964,
+>>       "sgd_sanity":      "8/8"
+>>     },
+>>     "notes": "SGD=TF-IDF char ngrams, XGB+RF=feature vectors, NB=text/SMS"
+>>   }
+>> }
+>>
+>> # ============================================================================
+>> # QUICK REFERENCE - ALL ENDPOINTS
+>> # ============================================================================
+>>
+>> GET   /                  - API home
+>> GET   /docs              - Swagger UI (interactive)
+>>
+>> POST  /scan/             - Scan URL or text for phishing
+>> GET   /history/          - Get scan history from MongoDB
+>> GET   /history/?limit=N  - Get last N scans
+>> GET   /metrics/          - Get model performance metrics
+>>
+>> # ============================================================================
+>> # EXAMPLE CURL COMMANDS
+>> # ============================================================================
+>>
+>> # Scan a URL
+>> curl -X POST http://localhost:8000/scan/ \
+>>   -H "Content-Type: application/json" \
+>>   -d '{"url": "http://paypal-secure-login.tk/verify/account"}'
+>>
+>> # Scan a text message
+>> curl -X POST http://localhost:8000/scan/ \
+>>   -H "Content-Type: application/json" \
+>>   -d '{"text": "URGENT: Your account is suspended. Verify now."}'
+>>
+>> # Scan both URL and text
+>> curl -X POST http://localhost:8000/scan/ \
+>>   -H "Content-Type: application/json" \
+>>   -d '{"url": "http://secure-bank.tk", "text": "Click to verify your account"}'
+>>
+>> # Get last 20 scans
+>> curl http://localhost:8000/history/?limit=20
+>>
+>> # Get model metrics
+>> curl http://localhost:8000/metrics/
+>>
+>> # ============================================================================
+>> # END OF DOCUMENTATION
+>> # ============================================================================

@@ -1,0 +1,56 @@
+Build a full-stack phishing detection web app with the following pages. 
+The backend API is already running at http://localhost:8000.
+
+TECH STACK:
+- Frontend: React + Tailwind CSS
+- No backend needed (connect directly to existing API at http://localhost:8000)
+
+PAGES TO BUILD:
+
+=== PAGE 1: LOGIN PAGE ===
+- Simple clean login form with username and password fields
+- App name: "PhishGuard" with a shield icon
+- Dark theme (dark navy background)
+- On login, just store username in localStorage and redirect to Home
+- No real auth needed, any username/password works
+- Show "Welcome to PhishGuard - AI Powered Phishing Detection" subtitle
+
+=== PAGE 2: HOME / SCAN PAGE ===
+- Navigation bar with: PhishGuard logo, Home, Scan, History links + logged-in username + Logout button
+- Big scan input section with TWO input fields:
+    1. URL input field (paste a URL to scan)
+    2. Text/SMS/Email input (paste message text to scan)
+    (user can fill one or both)
+- A big "SCAN NOW" button that calls:
+    POST http://localhost:8000/scan/
+    Body: { "url": "<url value>", "text": "<text value>" }
+- After scan, show result card with:
+    - VERDICT in big text: "PHISHING" (red) or "LEGITIMATE" (green)
+    - Severity badge: HIGH (red) / MEDIUM (orange) / LOW (yellow) / SAFE (green)
+    - Confidence score as a progress bar (0% to 100%)
+    - Data type detected (URL / Text / Both)
+    - Model scores breakdown as a bar chart showing:
+        XGBoost, Random Forest, SGD, Naive Bayes scores
+      (use Chart.js or Recharts for the bar chart)
+- Show loading spinner while scanning
+
+=== PAGE 3: HISTORY PAGE ===
+- Fetch from: GET http://localhost:8000/history/?limit=50
+- Show summary stats at top:
+    - Total Scans (number)
+    - Phishing Detected (number, red)
+    - Legitimate (number, green)
+- Show a Pie Chart (phishing vs legitimate split)
+- Show a table of all past scans with columns:
+    Timestamp | Input (URL or text preview) | Verdict | Confidence | Severity | Data Type
+- Color code rows: red tint for PHISHING, green tint for LEGITIMATE
+- Clicking a row expands it to show full model_scores breakdown
+- Add a "Refresh" button to reload data
+
+IMPORTANT NOTES:
+- Handle CORS: the API at localhost:8000 must be called with fetch()
+- Show proper error messages if API is unreachable
+- Make it fully responsive (mobile friendly)
+- Dark theme throughout: background #0d1117, cards #161b22, accent #00e5b0
+- Use React Router for navigation between pages
+- Protect Home and History routes (redirect to login if not logged in)
