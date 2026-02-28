@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ScanInput, ScanResponse, HistoryResponse } from "../types/api";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://web-production-4ab0.up.railway.app";
 
 export function useScan() {
   const queryClient = useQueryClient();
