@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Router } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,7 +13,7 @@ import History from "@/pages/history";
 // Components
 import { ProtectedRoute } from "@/components/protected-route";
 
-function Router() {
+function RouterContent() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
@@ -40,7 +40,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <Router base="/phishing-detector-phivora">
+          <RouterContent />
+        </Router>
       </TooltipProvider>
     </QueryClientProvider>
   );

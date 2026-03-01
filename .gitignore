@@ -1,6 +1,26 @@
-node_modules
-dist
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+
+# Dataset (ignore entire folder)
+dataset/
+
+# ML models
+*.pkl
+*.joblib
+
+# VS Code
+.vscode/
+
+# OS
 .DS_Store
-server/public
-vite.config.ts.*
-*.tar.gz

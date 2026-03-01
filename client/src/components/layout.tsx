@@ -35,7 +35,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 <ShieldCheck className="w-6 h-6 text-background" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">PhishGuard</h1>
+                <h1 className="text-xl font-bold text-white tracking-tight">PHIVORA</h1>
                 <p className="text-xs text-primary font-mono tracking-widest uppercase">System Online</p>
               </div>
             </div>
